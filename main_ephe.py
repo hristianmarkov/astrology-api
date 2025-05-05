@@ -7,6 +7,11 @@ from typing import Optional
 from timezonefinder import TimezoneFinder
 import pytz
 from fastapi.middleware.cors import CORSMiddleware
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Astrology API",
@@ -28,7 +33,9 @@ app.add_middleware(
 )
 
 # Set ephemeris path to the absolute path where the ephe files are located
-swe.set_ephe_path(os.path.join(os.path.dirname(__file__), "ephe"))
+ephe_path = os.path.join(os.path.dirname(__file__), "ephe")
+logger.info(f"Setting ephemeris path to: {ephe_path}")
+swe.set_ephe_path(ephe_path)
 
 # Initialize timezone finder
 tf = TimezoneFinder()
@@ -203,10 +210,12 @@ class DateInput(BaseModel):
 
 @app.get("/")
 async def root():
+    logger.info("Root endpoint called")
     return {"message": "Welcome to Astrology api!"}
 
 @app.post("/planets", response_model=dict)
 async def get_planet_positions(date_input: DateInput):
+    logger.info(f"Planets endpoint called with data: {date_input}")
     try:
         print(f"Processing request for date: {date_input.date}, time: {date_input.time}")
         # Calculate timezone based on location
