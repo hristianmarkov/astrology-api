@@ -6,6 +6,7 @@ import os
 from typing import Optional
 from timezonefinder import TimezoneFinder
 import pytz
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="Astrology API",
@@ -15,6 +16,15 @@ app = FastAPI(
     redoc_url="/redoc",
     openapi_url="/openapi.json",
     servers=[{"url": "https://astrology-api.onrender.com", "description": "Production server"}]
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Set ephemeris path to the absolute path where the ephe files are located
