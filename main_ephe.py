@@ -8,6 +8,8 @@ from timezonefinder import TimezoneFinder
 import pytz
 from fastapi.middleware.cors import CORSMiddleware
 import logging
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -31,6 +33,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add trusted host middleware
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=["*"]
+)
+
+# Add GZip middleware
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Set ephemeris path to the absolute path where the ephe files are located
 ephe_path = os.path.join(os.path.dirname(__file__), "ephe")
@@ -212,6 +223,11 @@ class DateInput(BaseModel):
 async def root():
     logger.info("Root endpoint called")
     return {"message": "Welcome to Astrology api!"}
+
+@app.options("/planets")
+async def planets_options():
+    logger.info("OPTIONS request received for /planets endpoint")
+    return {"message": "Allowed methods: POST"}
 
 @app.post("/planets", response_model=dict)
 async def get_planet_positions(date_input: DateInput):
