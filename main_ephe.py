@@ -12,7 +12,8 @@ app = FastAPI(
     description="API for calculating astrological positions using Swiss Ephemeris data files",
     version="1.0.9",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    openapi_url="/openapi.json"
 )
 
 # Set ephemeris path to the absolute path where the ephe files are located
@@ -191,9 +192,9 @@ class DateInput(BaseModel):
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to the Astrology API (Swiss Ephemeris data files)"}
+    return {"message": "Welcome to Astrology api!"}
 
-@app.post("/planets")
+@app.post("/planets", response_model=dict)
 async def get_planet_positions(date_input: DateInput):
     try:
         print(f"Processing request for date: {date_input.date}, time: {date_input.time}")
