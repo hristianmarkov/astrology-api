@@ -13,11 +13,12 @@ app = FastAPI(
     version="1.0.9",
     docs_url="/docs",
     redoc_url="/redoc",
-    openapi_url="/openapi.json"
+    openapi_url="/openapi.json",
+    servers=[{"url": "https://astrology-api.onrender.com", "description": "Production server"}]
 )
 
 # Set ephemeris path to the absolute path where the ephe files are located
-swe.set_ephe_path(r"C:\Users\Hrist\Documents\Astrology\ephe")
+swe.set_ephe_path(os.path.join(os.path.dirname(__file__), "ephe"))
 
 # Initialize timezone finder
 tf = TimezoneFinder()
