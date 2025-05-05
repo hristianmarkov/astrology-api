@@ -10,7 +10,9 @@ import pytz
 app = FastAPI(
     title="Astrology API",
     description="API for calculating astrological positions using Swiss Ephemeris data files",
-    version="1.0.9"
+    version="1.0.9",
+    docs_url="/docs",
+    redoc_url="/redoc"
 )
 
 # Set ephemeris path to the absolute path where the ephe files are located
