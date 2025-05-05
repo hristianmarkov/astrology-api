@@ -3,7 +3,7 @@ services:
     name: astrology-api
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main_ephe:app --host 0.0.0.0 --port $PORT --workers 1
+    startCommand: uvicorn main_ephe:app --host 0.0.0.0 --port $PORT --workers 1 --proxy-headers --forwarded-allow-ips "*"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
@@ -12,4 +12,14 @@ services:
     routes:
       - type: rewrite
         source: /*
-        destination: / 
+        destination: /
+    headers:
+      - path: /*
+        name: Access-Control-Allow-Origin
+        value: "*"
+      - path: /*
+        name: Access-Control-Allow-Methods
+        value: "GET,POST,OPTIONS"
+      - path: /*
+        name: Access-Control-Allow-Headers
+        value: "Content-Type,Accept" 
