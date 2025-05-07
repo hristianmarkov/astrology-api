@@ -390,7 +390,13 @@ async def get_planet_positions(date_input: DateInput):
         # Combine all for aspect calculation
         aspect_bodies = {**planet_positions, **{k: v for k, v in houses.items() if "name" in v}}
         aspects = calc_aspects(aspect_bodies)
-        
+
+        # Convert planets dictionary to list of {"name": ..., "data": ...}
+        planets_list = [{"name": name, "data": data} for name, data in planet_positions.items()]
+
+        # Convert houses dictionary to list of {"number": ..., "data": ...}
+        houses_list = [{"number": num, "data": data} for num, data in houses.items()]
+
         result = {
             "date": date_input.date,
             "time": date_input.time,
@@ -398,10 +404,11 @@ async def get_planet_positions(date_input: DateInput):
             "latitude": date_input.latitude,
             "longitude": date_input.longitude,
             "julian_day": float(jd),
-            "planets": planet_positions,
-            "houses": houses,
+            "planetsList": planets_list,
+            "housesList": houses_list,
             "aspects": aspects
         }
+
         print(f"Calculated result: {result}")
         return result
     except ValueError as e:
