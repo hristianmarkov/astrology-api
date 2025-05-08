@@ -391,11 +391,25 @@ async def get_planet_positions(date_input: DateInput):
         aspect_bodies = {**planet_positions, **{k: v for k, v in houses.items() if "name" in v}}
         aspects = calc_aspects(aspect_bodies)
 
-        # Convert planets dictionary to list of {"name": ..., "data": ...}
-        planets_list = [{"name": name, "data": data} for name, data in planet_positions.items()]
-
-        # Convert houses dictionary to list of {"number": ..., "data": ...}
-        houses_list = [{"number": num, "data": data} for num, data in houses.items()]
+        # Flatten planets list: include "name" and move all data fields up
+        planets_list = []
+        for name, data in planet_positions.items():
+            if data:
+                flat_data = {"name": name}
+                flat_data.update(data)
+                planets_list.append(flat_data)
+        
+        # Flatten houses list: include "number" and move all fields up, including flattened ruler_position
+        houses_list = []
+        for number, data in houses.items():
+            flat_data = {"number": number}
+            for key, value in data.items():
+                if key == "ruler_position" and isinstance(value, dict):
+                    for rk, rv in value.items():
+                        flat_data[f"ruler_{rk}"] = rv
+                else:
+                    flat_data[key] = value
+            houses_list.append(flat_data)
 
         result = {
             "date": date_input.date,
@@ -404,8 +418,8 @@ async def get_planet_positions(date_input: DateInput):
             "latitude": date_input.latitude,
             "longitude": date_input.longitude,
             "julian_day": float(jd),
-            "planetsList": planets_list,
-            "housesList": houses_list,
+            "planets": planets_list,
+            "houses": houses_list,
             "aspects": aspects
         }
 
